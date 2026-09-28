@@ -3,13 +3,16 @@ using EscolaDeCursos.WebApp.Modulos.ModuloInstrutor.Dominio;
 using EscolaDeCursos.WebApp.Compartilhado.Infraestrutura.Arquivos;
 using EscolaDeCursos.WebApp.Modulos.ModuloAluno.Infraestrutura;
 using EscolaDeCursos.WebApp.Modulos.ModuloInstrutor.Infraestrutura;
+using EscolaDeCursos.WebApp.Compartilhado.Infraestrutura.Orm;
+using Microsoft.EntityFrameworkCore;
 
 namespace EscolaDeCursos.WebApp.Compartilhado.Infraestrutura;
 
 public static class InjecaoDependencia
 {
-    public static void AddInfraRepositories(this IServiceCollection services)
+    public static void AddInfraRepositories(this IServiceCollection services, IConfiguration configuration)
     {
+        // Configura persitência em arquivo
         services.AddSingleton<ContextoJson>(_ =>
         {
             ContextoJson contexto = new();
@@ -17,7 +20,21 @@ public static class InjecaoDependencia
             return contexto;
         });
 
-        services.AddScoped<IRepositorioInstrutor, RepositorioInstrutorEmArquivo>();
+        // Configura persistência em Banco de dados
+        services.AddDbContext<EscolaDeCursosDbContext>(options =>
+        {
+            string connectionString = configuration.GetConnectionString("SqlServerDocker");
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException(
+                    $"A connection string \"SqlServerDocker\" não foi encontrada"
+                );
+            }
+
+            options.UseSqlServer(connectionString);
+        });
+
+        services.AddScoped<IRepositorioInstrutor, RepositorioInstrutorEmOrm>();
         services.AddScoped<IRepositorioAluno, RepositorioAlunoEmArquivo>();
     }
 }
