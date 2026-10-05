@@ -3,6 +3,10 @@ using EscolaDeCursos.WebApp.Modulos.ModuloAluno.Infraestrutura;
 using EscolaDeCursos.WebApp.Modulos.ModuloCurso.Dominio;
 using EscolaDeCursos.WebApp.Modulos.ModuloCurso.Infraestrutura;
 using EscolaDeCursos.WebApp.Modulos.ModuloInstrutor.Dominio;
+using EscolaDeCursos.WebApp.Modulos.ModuloMatricula.Dominio;
+using EscolaDeCursos.WebApp.Modulos.ModuloMatricula.Infraestrutura;
+using EscolaDeCursos.WebApp.Modulos.ModuloTurma.Dominio;
+using EscolaDeCursos.WebApp.Modulos.ModuloTurma.Infraestrutura;
 using Microsoft.EntityFrameworkCore;
 namespace EscolaDeCursos.WebApp.Compartilhado.Infraestrutura.Orm;
 
@@ -10,9 +14,9 @@ public sealed class EscolaDeCursosDbContext : DbContext
 {
     public DbSet<Instrutor> Instrutores => Set<Instrutor>();
     public DbSet<Aluno> Alunos => Set<Aluno>();
-
     public DbSet<Curso> Cursos => Set<Curso>();
-
+    public DbSet<Turma> Tumas => Set<Turma>();
+    public DbSet<Matricula> Matriculas => Set<Matricula>();
     public DbSet<Aula> Aulas => Set<Aula>();
 
     public EscolaDeCursosDbContext(DbContextOptions<EscolaDeCursosDbContext> options) : base(options)
@@ -26,5 +30,8 @@ public sealed class EscolaDeCursosDbContext : DbContext
 
         modelBuilder.ApplyConfiguration(new CursoConfiguration());
         modelBuilder.ApplyConfiguration(new AulaConfiguration());
+
+        modelBuilder.ApplyConfiguration(new TurmaConfiguration());
+        modelBuilder.ApplyConfiguration(new MatriculaConfiguration());
     }
 }

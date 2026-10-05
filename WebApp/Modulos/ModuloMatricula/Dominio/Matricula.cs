@@ -6,7 +6,9 @@ namespace EscolaDeCursos.WebApp.Modulos.ModuloMatricula.Dominio;
 
 public class Matricula : EntidadeBase<Matricula>
 {
+    public Guid AlunoId { get; set; } = Guid.Empty;
     public Aluno Aluno { get; set; } = null!;
+    public Guid TurmaId { get; set; } = Guid.Empty;
     public Turma Turma { get; set; } = null!;
 
     public Matricula()

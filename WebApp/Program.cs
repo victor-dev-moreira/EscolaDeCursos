@@ -11,6 +11,16 @@ builder.Services.AddPresentationConfig();
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+
+    var dbContext = scope.ServiceProvider.GetRequiredService<EscolaDeCursosDbContext>();
+
+    if (dbContext.Database.IsSqlServer())
+        dbContext.Database.Migrate();
+}
+
 // Aplica as migrations pendentes antes de atender às requisições.
 using (var scope = app.Services.CreateScope())
 {
