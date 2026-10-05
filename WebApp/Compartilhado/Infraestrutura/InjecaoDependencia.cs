@@ -3,8 +3,10 @@ using EscolaDeCursos.WebApp.Modulos.ModuloInstrutor.Dominio;
 using EscolaDeCursos.WebApp.Compartilhado.Infraestrutura.Arquivos;
 using EscolaDeCursos.WebApp.Modulos.ModuloAluno.Infraestrutura;
 using EscolaDeCursos.WebApp.Modulos.ModuloInstrutor.Infraestrutura;
-using EscolaDeCursos.WebApp.Compartilhado.Infraestrutura.Orm;
 using Microsoft.EntityFrameworkCore;
+using EscolaDeCursos.WebApp.Compartilhado.Infraestrutura.Orm;
+using EscolaDeCursos.WebApp.Modulos.ModuloCurso.Dominio;
+using EscolaDeCursos.WebApp.Modulos.ModuloCurso.Infraestrutura;
 
 namespace EscolaDeCursos.WebApp.Compartilhado.Infraestrutura;
 
@@ -12,7 +14,7 @@ public static class InjecaoDependencia
 {
     public static void AddInfraRepositories(this IServiceCollection services, IConfiguration configuration)
     {
-        // Configura persitência em arquivo
+        // Configura Persistência em Arquivo
         services.AddSingleton<ContextoJson>(_ =>
         {
             ContextoJson contexto = new();
@@ -20,14 +22,15 @@ public static class InjecaoDependencia
             return contexto;
         });
 
-        // Configura persistência em Banco de dados
+        // Configura Persistência em Banco de Dados
         services.AddDbContext<EscolaDeCursosDbContext>(options =>
         {
-            string connectionString = configuration.GetConnectionString("SqlServerDocker");
+            string? connectionString = configuration.GetConnectionString("SqlServerDocker");
+
             if (string.IsNullOrWhiteSpace(connectionString))
             {
                 throw new InvalidOperationException(
-                    $"A connection string \"SqlServerDocker\" não foi encontrada"
+                    $"A Connection String \"SqlServerDocker\" não foi encontrada"
                 );
             }
 
@@ -35,6 +38,8 @@ public static class InjecaoDependencia
         });
 
         services.AddScoped<IRepositorioInstrutor, RepositorioInstrutorEmOrm>();
-        services.AddScoped<IRepositorioAluno, RepositorioAlunoEmArquivo>();
+        services.AddScoped<IRepositorioAluno, RepositorioAlunoEmOrm>();
+        services.AddScoped<IRepositorioCurso, RepositorioCursoEmOrm>();
+        services.AddScoped<IRepositorioAula, RepositorioAulaEmOrm>();
     }
 }
