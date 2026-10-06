@@ -21,13 +21,6 @@ if (app.Environment.IsDevelopment())
         dbContext.Database.Migrate();
 }
 
-// Aplica as migrations pendentes antes de atender às requisições.
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<EscolaDeCursosDbContext>();
-    dbContext.Database.Migrate();
-}
-
 // Middlewares de roteamento
 app.UseRouting();
 app.MapDefaultControllerRoute();
