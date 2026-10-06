@@ -18,27 +18,22 @@ public static class InjecaoDependencia
 {
     public static void AddInfraRepositories(this IServiceCollection services, IConfiguration configuration)
     {
-        // Configura Persistência em Arquivo
-        services.AddSingleton<ContextoJson>(_ =>
-        {
-            ContextoJson contexto = new();
-            contexto.Carregar();
-            return contexto;
-        });
-
         // Configura Persistência em Banco de Dados
         services.AddDbContext<EscolaDeCursosDbContext>(options =>
         {
-            string? connectionString = configuration.GetConnectionString("SqlServerDocker");
+            string? connectionString = configuration.GetConnectionString("SqlServer");
 
             if (string.IsNullOrWhiteSpace(connectionString))
             {
                 throw new InvalidOperationException(
-                    $"A Connection String \"SqlServerDocker\" não foi encontrada"
+                    $"A Connection String \"SqlServer\" não foi encontrada"
                 );
             }
 
-            options.UseSqlServer(connectionString);
+            options.UseSqlServer(connectionString, config =>
+            {
+                config.EnableRetryOnFailure(3); // Latencia
+            });
         });
 
         services.AddScoped<IRepositorioInstrutor, RepositorioInstrutorEmOrm>();
